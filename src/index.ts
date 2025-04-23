@@ -1,235 +1,222 @@
 #!/usr/bin/env node
 
-// Try this import approach instead
-// src/index.ts
-// For ESM modules (recommended for TypeScript)
-import { MCPServer } from "@modelcontextprotocol/sdk/dist/esm/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/dist/esm/server/stdio.js";
-import { z } from "zod";
-import * as fileService from './services/fileService.js'; // Note the .js extension
+/**
+ * This is a template MCP server that implements a simple notes system.
+ * It demonstrates core MCP concepts like resources and tools by allowing:
+ * - Listing notes as resources
+ * - Reading individual notes
+ * - Creating new notes via a tool
+ * - Summarizing all notes via a prompt
+ */
 
-// Create the MCP server
-const server = new MCPServer({
-  name: "mcp-file-surgeon"
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  CallToolRequestSchema,
+  ListResourcesRequestSchema,
+  ListToolsRequestSchema,
+  ReadResourceRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
+
+/**
+ * Type alias for a note object.
+ */
+type Note = { title: string, content: string };
+
+/**
+ * Simple in-memory storage for notes.
+ * In a real implementation, this would likely be backed by a database.
+ */
+const notes: { [id: string]: Note } = {
+  "1": { title: "First Note", content: "This is note 1" },
+  "2": { title: "Second Note", content: "This is note 2" }
+};
+
+/**
+ * Create an MCP server with capabilities for resources (to list/read notes),
+ * tools (to create new notes), and prompts (to summarize notes).
+ */
+const server = new Server(
+  {
+    name: "mcp-file-surgeon",
+    version: "0.1.0",
+  },
+  {
+    capabilities: {
+      resources: {},
+      tools: {},
+      prompts: {},
+    },
+  }
+);
+
+/**
+ * Handler for listing available notes as resources.
+ * Each note is exposed as a resource with:
+ * - A note:// URI scheme
+ * - Plain text MIME type
+ * - Human readable name and description (now including the note title)
+ */
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  return {
+    resources: Object.entries(notes).map(([id, note]) => ({
+      uri: `note:///${id}`,
+      mimeType: "text/plain",
+      name: note.title,
+      description: `A text note: ${note.title}`
+    }))
+  };
 });
 
-// Register file info tool
-server.tool("get_file_info", 
-  "Get metadata about a file without reading its contents",
-  z.object({
-    file_path: z.string().describe("Path to the file"),
-  }),
-  async (params: { file_path: string }) => {
-    try {
-      const fileInfo = await fileService.getFileInfo(params.file_path);
-      return {
-        file_path: fileInfo.filePath,
-        file_name: fileInfo.fileName,
-        file_size: fileInfo.fileSize,
-        last_modified: fileInfo.lastModified.toISOString(),
-        is_directory: fileInfo.isDirectory
-      };
-    } catch (error: any) {
-      throw new Error(`Failed to get file info: ${error.message}`);
-    }
-  }
-);
+/**
+ * Handler for reading the contents of a specific note.
+ * Takes a note:// URI and returns the note content as plain text.
+ */
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  const url = new URL(request.params.uri);
+  const id = url.pathname.replace(/^\//, '');
+  const note = notes[id];
 
-// Register list directory tool
-server.tool("list_directory", 
-  "List the contents of a directory",
-  z.object({
-    dir_path: z.string().describe("Path to the directory"),
-  }),
-  async (params: { dir_path: string }) => {
-    try {
-      const contents = await fileService.listDirectory(params.dir_path);
-      return {
-        dir_path: contents.dirPath,
-        files: contents.files.map((file: any) => ({
-          file_path: file.filePath,
-          file_name: file.fileName,
-          file_size: file.fileSize,
-          last_modified: file.lastModified.toISOString(),
-          is_directory: file.isDirectory
-        }))
-      };
-    } catch (error: any) {
-      throw new Error(`Failed to list directory: ${error.message}`);
-    }
+  if (!note) {
+    throw new Error(`Note ${id} not found`);
   }
-);
 
-// Register read file tool
-server.tool("read_file", 
-  "Read the contents of a file",
-  z.object({
-    file_path: z.string().describe("Path to the file"),
-  }),
-  async (params: { file_path: string }) => {
-    try {
-      const fileContent = await fileService.readFile(params.file_path);
+  return {
+    contents: [{
+      uri: request.params.uri,
+      mimeType: "text/plain",
+      text: note.content
+    }]
+  };
+});
+
+/**
+ * Handler that lists available tools.
+ * Exposes a single "create_note" tool that lets clients create new notes.
+ */
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: "create_note",
+        description: "Create a new note",
+        inputSchema: {
+          type: "object",
+          properties: {
+            title: {
+              type: "string",
+              description: "Title of the note"
+            },
+            content: {
+              type: "string",
+              description: "Text content of the note"
+            }
+          },
+          required: ["title", "content"]
+        }
+      }
+    ]
+  };
+});
+
+/**
+ * Handler for the create_note tool.
+ * Creates a new note with the provided title and content, and returns success message.
+ */
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  switch (request.params.name) {
+    case "create_note": {
+      const title = String(request.params.arguments?.title);
+      const content = String(request.params.arguments?.content);
+      if (!title || !content) {
+        throw new Error("Title and content are required");
+      }
+
+      const id = String(Object.keys(notes).length + 1);
+      notes[id] = { title, content };
+
       return {
-        file_path: fileContent.filePath,
-        file_name: fileContent.fileName,
-        content: fileContent.content
+        content: [{
+          type: "text",
+          text: `Created note ${id}: ${title}`
+        }]
       };
-    } catch (error: any) {
-      throw new Error(`Failed to read file: ${error.message}`);
     }
-  }
-);
 
-// Register write file tool
-server.tool("write_file", 
-  "Write content to a file (replacing existing content)",
-  z.object({
-    file_path: z.string().describe("Path to the file"),
-    content: z.string().describe("Content to write to the file"),
-  }),
-  async (params: { file_path: string, content: string }) => {
-    try {
-      const result = await fileService.writeFile(params.file_path, params.content);
-      return {
-        success: result.success,
-        message: result.message,
-        file_info: result.fileInfo ? {
-          file_path: result.fileInfo.filePath,
-          file_name: result.fileInfo.fileName,
-          file_size: result.fileInfo.fileSize,
-          last_modified: result.fileInfo.lastModified.toISOString(),
-          is_directory: result.fileInfo.isDirectory
-        } : undefined
-      };
-    } catch (error: any) {
-      throw new Error(`Failed to write file: ${error.message}`);
+    default:
+      throw new Error("Unknown tool");
+  }
+});
+
+/**
+ * Handler that lists available prompts.
+ * Exposes a single "summarize_notes" prompt that summarizes all notes.
+ */
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  return {
+    prompts: [
+      {
+        name: "summarize_notes",
+        description: "Summarize all notes",
+      }
+    ]
+  };
+});
+
+/**
+ * Handler for the summarize_notes prompt.
+ * Returns a prompt that requests summarization of all notes, with the notes' contents embedded as resources.
+ */
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+  if (request.params.name !== "summarize_notes") {
+    throw new Error("Unknown prompt");
+  }
+
+  const embeddedNotes = Object.entries(notes).map(([id, note]) => ({
+    type: "resource" as const,
+    resource: {
+      uri: `note:///${id}`,
+      mimeType: "text/plain",
+      text: note.content
     }
-  }
-);
+  }));
 
-// Register create file tool
-server.tool("create_file", 
-  "Create a new file with content",
-  z.object({
-    file_path: z.string().describe("Path for the new file"),
-    content: z.string().optional().describe("Initial content for the file"),
-  }),
-  async (params: { file_path: string, content?: string }) => {
-    try {
-      const result = await fileService.createFile(params.file_path, params.content || '');
-      return {
-        success: result.success,
-        message: result.message,
-        file_info: result.fileInfo ? {
-          file_path: result.fileInfo.filePath,
-          file_name: result.fileInfo.fileName,
-          file_size: result.fileInfo.fileSize,
-          last_modified: result.fileInfo.lastModified.toISOString(),
-          is_directory: result.fileInfo.isDirectory
-        } : undefined
-      };
-    } catch (error: any) {
-      throw new Error(`Failed to create file: ${error.message}`);
-    }
-  }
-);
+  return {
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: "Please summarize the following notes:"
+        }
+      },
+      ...embeddedNotes.map(note => ({
+        role: "user" as const,
+        content: note
+      })),
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: "Provide a concise summary of all the notes above."
+        }
+      }
+    ]
+  };
+});
 
-// Register delete file tool
-server.tool("delete_file", 
-  "Delete a file",
-  z.object({
-    file_path: z.string().describe("Path to the file to delete"),
-  }),
-  async (params: { file_path: string }) => {
-    try {
-      const result = await fileService.deleteFile(params.file_path);
-      return {
-        success: result.success,
-        message: result.message,
-        file_info: result.fileInfo ? {
-          file_path: result.fileInfo.filePath,
-          file_name: result.fileInfo.fileName,
-          file_size: result.fileInfo.fileSize,
-          last_modified: result.fileInfo.lastModified.toISOString(),
-          is_directory: result.fileInfo.isDirectory
-        } : undefined
-      };
-    } catch (error: any) {
-      throw new Error(`Failed to delete file: ${error.message}`);
-    }
-  }
-);
+/**
+ * Start the server using stdio transport.
+ * This allows the server to communicate via standard input/output streams.
+ */
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
 
-// Register patch file lines tool
-server.tool("patch_file_lines", 
-  "Modify specific lines in a file",
-  z.object({
-    file_path: z.string().describe("Path to the file"),
-    start_line: z.number().int().min(0).describe("Line number to start modification (0-based)"),
-    end_line: z.number().int().min(0).describe("Line number to end modification (0-based, inclusive)"),
-    replacement: z.string().describe("Text to replace the specified lines"),
-  }),
-  async (params: { file_path: string, start_line: number, end_line: number, replacement: string }) => {
-    try {
-      const result = await fileService.patchFileLines(
-        params.file_path,
-        params.start_line,
-        params.end_line,
-        params.replacement
-      );
-      return {
-        success: result.success,
-        message: result.message,
-        lines_replaced: result.linesReplaced,
-        file_info: result.fileInfo ? {
-          file_path: result.fileInfo.filePath,
-          file_name: result.fileInfo.fileName,
-          file_size: result.fileInfo.fileSize,
-          last_modified: result.fileInfo.lastModified.toISOString(),
-          is_directory: result.fileInfo.isDirectory
-        } : undefined
-      };
-    } catch (error: any) {
-      throw new Error(`Failed to patch file lines: ${error.message}`);
-    }
-  }
-);
-
-// Register patch file positions tool
-server.tool("patch_file_positions", 
-  "Modify specific character positions in a file",
-  z.object({
-    file_path: z.string().describe("Path to the file"),
-    start_pos: z.number().int().min(0).describe("Starting character position"),
-    end_pos: z.number().int().min(0).describe("Ending character position (inclusive)"),
-    replacement: z.string().describe("Text to replace the specified range"),
-  }),
-  async (params: { file_path: string, start_pos: number, end_pos: number, replacement: string }) => {
-    try {
-      const result = await fileService.patchFilePositions(
-        params.file_path,
-        params.start_pos,
-        params.end_pos,
-        params.replacement
-      );
-      return {
-        success: result.success,
-        message: result.message,
-        characters_replaced: result.charactersReplaced,
-        file_info: result.fileInfo ? {
-          file_path: result.fileInfo.filePath,
-          file_name: result.fileInfo.fileName,
-          file_size: result.fileInfo.fileSize,
-          last_modified: result.fileInfo.lastModified.toISOString(),
-          is_directory: result.fileInfo.isDirectory
-        } : undefined
-      };
-    } catch (error: any) {
-      throw new Error(`Failed to patch file positions: ${error.message}`);
-    }
-  }
-);
-
-// Start the server
-server.run();
-console.log("MCP file surgeon server started");
+main().catch((error) => {
+  console.error("Server error:", error);
+  process.exit(1);
+});

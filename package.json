@@ -1,33 +1,26 @@
 {
   "name": "mcp-file-surgeon",
   "version": "0.1.0",
-  "description": "MCP server for surgical file editing operations",
-  "main": "dist/index.js",
-  "bin": {
-    "mcp-file-surgeon": "dist/index.js"
-  },
+  "description": "A Model Context Protocol server",
+  "private": true,
   "type": "module",
-  "scripts": {
-    "build": "tsc && chmod +x dist/index.js",
-    "start": "node dist/index.js",
-    "dev": "ts-node --esm src/index.ts"
+  "bin": {
+    "mcp-file-surgeon": "./build/index.js"
   },
-  "keywords": [
-    "mcp",
-    "file",
-    "edit",
-    "claude"
+  "files": [
+    "build"
   ],
-  "author": "",
-  "license": "MIT",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.10.0",
-    "zod": "^3.24.3",
-    "zod-to-json-schema": "^3.24.5"
+    "@modelcontextprotocol/sdk": "0.6.0"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
   }
 }

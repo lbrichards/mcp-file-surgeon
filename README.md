@@ -1,57 +1,70 @@
-# MCP File Surgeon
+# mcp-file-surgeon MCP Server
 
-A Model Context Protocol (MCP) server for performing surgical file editing operations.
+A Model Context Protocol server
+
+This is a TypeScript-based MCP server that implements a simple notes system. It demonstrates core MCP concepts by providing:
+
+- Resources representing text notes with URIs and metadata
+- Tools for creating new notes
+- Prompts for generating summaries of notes
 
 ## Features
 
-- Get file information and metadata
-- List directory contents
-- Read and write files
-- Create and delete files
-- Memory-efficient patching of specific lines in files
-- Memory-efficient patching of specific character positions in files
+### Resources
+- List and access notes via `note://` URIs
+- Each note has a title, content and metadata
+- Plain text mime type for simple content access
+
+### Tools
+- `create_note` - Create new text notes
+  - Takes title and content as required parameters
+  - Stores note in server state
+
+### Prompts
+- `summarize_notes` - Generate a summary of all stored notes
+  - Includes all note contents as embedded resources
+  - Returns structured prompt for LLM summarization
+
+## Development
+
+Install dependencies:
+```bash
+npm install
+```
+
+Build the server:
+```bash
+npm run build
+```
+
+For development with auto-rebuild:
+```bash
+npm run watch
+```
 
 ## Installation
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Build the project: `npm run build`
+To use with Claude Desktop, add the server config:
 
-## Usage
-
-You can run the server directly:
-
-```
-npm start
-```
-
-Or use it with Claude by adding it to your Claude configuration:
+On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
     "mcp-file-surgeon": {
-      "command": "node",
-      "args": [
-        "/path/to/mcp-file-surgeon/dist/index.js"
-      ],
-      "cwd": "/path/to/mcp-file-surgeon"
+      "command": "/path/to/mcp-file-surgeon/build/index.js"
     }
   }
 }
 ```
 
-## Available Tools
+### Debugging
 
-- `get_file_info`: Get metadata about a file without reading its contents
-- `list_directory`: List contents of a directory
-- `read_file`: Read the contents of a file
-- `write_file`: Write content to a file (replacing existing content)
-- `create_file`: Create a new file with content
-- `delete_file`: Delete a file
-- `patch_file_lines`: Modify specific lines in a file
-- `patch_file_positions`: Modify specific character positions in a file
+Since MCP servers communicate over stdio, debugging can be challenging. We recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is available as a package script:
 
-## License
+```bash
+npm run inspector
+```
 
-MIT
+The Inspector will provide a URL to access debugging tools in your browser.
