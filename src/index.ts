@@ -19,6 +19,10 @@ import { READ_FILE_TOOL, handleReadFile } from './tools/read-file/index.js';
 import { COPY_FILE_TOOL, handleCopyFile } from './tools/copy-file/index.js';
 import { WRITE_FILE_TOOL, handleWriteFile } from './tools/write-file/index.js';
 import { PATCH_FILE_LINES_TOOL, handlePatchFileLines } from './tools/patch-file-lines/index.js';
+import { PATCH_FILE_POSITIONS_TOOL, handlePatchFilePositions } from './tools/patch-file-positions/index.js';
+import { FIND_IN_FILE_TOOL, handleFindInFile } from './tools/find-in-file/index.js';
+import { CREATE_FILE_TOOL, handleCreateFile } from './tools/create-file/index.js';
+import { GET_FILE_SLICE_TOOL, handleGetFileSlice } from './tools/get-file-slice/index.js';
 
 async function runServer() {
   const server = new Server(
@@ -42,7 +46,11 @@ async function runServer() {
       READ_FILE_TOOL,
       COPY_FILE_TOOL,
       WRITE_FILE_TOOL,
-      PATCH_FILE_LINES_TOOL
+      PATCH_FILE_LINES_TOOL,
+      PATCH_FILE_POSITIONS_TOOL,
+      FIND_IN_FILE_TOOL,
+      CREATE_FILE_TOOL,
+      GET_FILE_SLICE_TOOL
     ],
   }));
 
@@ -77,6 +85,22 @@ async function runServer() {
 
     if (request.params.name === "patch_file_lines") {
       return handlePatchFileLines(request);
+    }
+
+    if (request.params.name === "patch_file_positions") {
+      return handlePatchFilePositions(request);
+    }
+
+    if (request.params.name === "find_in_file") {
+      return handleFindInFile(request);
+    }
+
+    if (request.params.name === "create_file") {
+      return handleCreateFile(request);
+    }
+
+    if (request.params.name === "get_file_slice") {
+      return handleGetFileSlice(request);
     }
 
     return {
