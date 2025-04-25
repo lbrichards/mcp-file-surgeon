@@ -291,5 +291,82 @@ export const TOOL_DESCRIPTIONS = {
                 Only affects preview output.
                 Helps verify correct positioning.`
         }
+    },
+    PING: {
+        TOOL: `A simple diagnostic tool that returns 'pong'.
+            
+            Key features:
+            - Zero configuration
+            - No parameters needed
+            - Immediate response
+            - Useful for testing
+            
+            Common usage patterns:
+            - Connection testing
+            - Tool chain verification
+            - Latency checks
+            - System health checks`,
+        PARAMS: {}
+    },
+    READ_FILE: {
+        TOOL: `Reads and returns the entire content of a file.
+            
+            Key features:
+            - Full file content access
+            - UTF-8 text decoding
+            - Memory-efficient streaming
+            - Error handling for missing files
+            
+            Common usage patterns:
+            - Reading configuration files
+            - Loading text content
+            - File content analysis
+            - Data processing preparation
+            
+            Best practices:
+            - Check file existence first with get_file_info
+            - Consider file size before reading
+            - Use get_file_slice for partial reads
+            - Handle potential encoding issues`,
+        PARAMS: {
+            FILE_PATH: `Path to the file to read.
+                Must be a valid, existing file path.
+                Can be absolute or relative path.
+                File must be readable.
+                Returns error if file doesn't exist.
+                Content returned as UTF-8 text.`
+        }
+    },
+    WRITE_FILE: {
+        TOOL: `Writes content to a file, replacing any existing content.
+            
+            Key features:
+            - Complete file content replacement
+            - Creates parent directories if needed
+            - UTF-8 text encoding
+            - Error handling for write access
+            
+            Common usage patterns:
+            - Saving configuration files
+            - Writing processed data
+            - Creating log files
+            - Generating output files
+            
+            Best practices:
+            - Verify file permissions first
+            - Consider using create_file for new files
+            - Back up existing content if needed
+            - Handle encoding requirements`,
+        PARAMS: {
+            FILE_PATH: `Path to the file to write.
+                Can be absolute or relative path.
+                Parent directories will be created if needed.
+                File will be created if it doesn't exist.
+                Existing content will be completely replaced.`,
+            CONTENT: `Content to write to the file.
+                Will be encoded as UTF-8 text.
+                Can be empty string for empty file.
+                No automatic line ending handling.`
+        }
     }
 } as const;
