@@ -1,1 +1,43 @@
-{\n  \"name\": \"@s1larry/mcp-file-surgeon\",\n  \"version\": \"0.1.28\",\n  \"description\": \"A Model Context Protocol server for file operations with unified diff preview\",\n  \"type\": \"module\",\n  \"bin\": {\n    \"mcp-server-file-surgeon\": \"build/index.js\"\n  },\n  \"files\": [\n    \"build\"\n  ],\n  \"scripts\": {\n    \"build\": \"tsc && node -e \\\"require('fs').chmodSync('build/index.js', '755')\\\"\",\n    \"prepare\": \"npm run build\",\n    \"watch\": \"tsc --watch\",\n    \"inspector\": \"npx @modelcontextprotocol/inspector build/index.js\",\n    \"test\": \"node --experimental-vm-modules node_modules/jest/bin/jest.js\"\n  },\n  \"dependencies\": {\n    \"@modelcontextprotocol/sdk\": \"0.6.0\"\n  },\n  \"devDependencies\": {\n    \"@types/jest\": \"^29.5.14\",\n    \"@types/node\": \"^20.17.30\",\n    \"jest\": \"^29.7.0\",\n    \"jest-ts-webcompat-resolver\": \"^1.0.0\",\n    \"ts-jest\": \"^29.3.2\",\n    \"typescript\": \"^5.8.3\"\n  },\n  \"author\": \"Larry Richards\",\n  \"license\": \"MIT\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/lbrichards/mcp-file-surgeon.git\"\n  },\n  \"keywords\": [\n    \"mcp\",\n    \"file\",\n    \"surgeon\",\n    \"claude\",\n    \"diff\"\n  ]\n}
+{
+  "name": "@s1larry/mcp-file-surgeon",
+  "version": "0.1.28",
+  "description": "A Model Context Protocol server for file operations with unified diff preview",
+  "type": "module",
+  "bin": {
+    "mcp-server-file-surgeon": "build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "0.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.17.30",
+    "jest": "^29.7.0",
+    "jest-ts-webcompat-resolver": "^1.0.0",
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.8.3"
+  },
+  "author": "Larry Richards",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lbrichards/mcp-file-surgeon.git"
+  },
+  "keywords": [
+    "mcp",
+    "file",
+    "surgeon",
+    "claude",
+    "diff"
+  ]
+}
