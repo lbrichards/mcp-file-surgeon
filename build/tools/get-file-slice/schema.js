@@ -1,24 +1,25 @@
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 export const GET_FILE_SLICE_TOOL = {
     name: "get_file_slice",
-    description: "Get a portion of a file's content given byte positions",
+    description: TOOL_DESCRIPTIONS.GET_FILE_SLICE.TOOL,
     inputSchema: {
         type: "object",
         properties: {
             file_path: {
                 type: "string",
-                description: "Path to the file"
+                description: TOOL_DESCRIPTIONS.GET_FILE_SLICE.PARAMS.FILE_PATH
             },
             start_position: {
                 type: "number",
-                description: "Starting byte position"
+                description: TOOL_DESCRIPTIONS.GET_FILE_SLICE.PARAMS.START_POSITION
             },
             length: {
                 type: "number",
-                description: "Number of bytes to read"
+                description: TOOL_DESCRIPTIONS.GET_FILE_SLICE.PARAMS.LENGTH
             },
             context_lines: {
                 type: "number",
-                description: "Number of lines of context to include before/after",
+                description: TOOL_DESCRIPTIONS.GET_FILE_SLICE.PARAMS.CONTEXT_LINES,
                 optional: true,
                 default: 2
             }

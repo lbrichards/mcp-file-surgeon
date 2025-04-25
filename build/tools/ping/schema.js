@@ -1,6 +1,7 @@
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 export const PING_TOOL = {
     name: "ping",
-    description: "A simple ping tool that returns pong",
+    description: TOOL_DESCRIPTIONS.PING.TOOL,
     inputSchema: {
         type: "object",
         properties: {},

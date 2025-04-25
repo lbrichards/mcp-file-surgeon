@@ -1,16 +1,17 @@
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 export const WRITE_FILE_TOOL = {
     name: "write_file",
-    description: "Write content to a file, replacing existing content",
+    description: TOOL_DESCRIPTIONS.WRITE_FILE.TOOL,
     inputSchema: {
         type: "object",
         properties: {
             file_path: {
                 type: "string",
-                description: "Path to the file to write"
+                description: TOOL_DESCRIPTIONS.WRITE_FILE.PARAMS.FILE_PATH
             },
             content: {
                 type: "string",
-                description: "Content to write to the file"
+                description: TOOL_DESCRIPTIONS.WRITE_FILE.PARAMS.CONTENT
             }
         },
         required: ["file_path", "content"]

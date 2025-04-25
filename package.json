@@ -1,6 +1,6 @@
 {
   "name": "@s1larry/mcp-file-surgeon",
-  "version": "0.1.28",
+  "version": "0.1.30",
   "description": "A Model Context Protocol server for file operations with unified diff preview",
   "type": "module",
   "bin": {

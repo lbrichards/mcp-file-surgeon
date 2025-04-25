@@ -1,33 +1,34 @@
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 export const PATCH_FILE_LINES_TOOL = {
     name: "patch_file_lines",
-    description: "Modify specific lines in a file",
+    description: TOOL_DESCRIPTIONS.PATCH_FILE_LINES.TOOL,
     inputSchema: {
         type: "object",
         properties: {
             file_path: {
                 type: "string",
-                description: "Path to the file"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_LINES.PARAMS.FILE_PATH
             },
             start_line: {
                 type: "number",
-                description: "Line number to start modification (0-based)"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_LINES.PARAMS.START_LINE
             },
             end_line: {
                 type: "number",
-                description: "Line number to end modification (0-based, inclusive)"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_LINES.PARAMS.END_LINE
             },
             replacement: {
                 type: "string",
-                description: "Text to replace the specified lines"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_LINES.PARAMS.REPLACEMENT
             },
             preview_only: {
                 type: "boolean",
-                description: "When true, returns a preview without modifying the file",
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_LINES.PARAMS.PREVIEW_ONLY,
                 default: false
             },
             context_lines: {
                 type: "number",
-                description: "Number of lines before and after the change to include in preview",
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_LINES.PARAMS.CONTEXT_LINES,
                 default: 2
             }
         },
