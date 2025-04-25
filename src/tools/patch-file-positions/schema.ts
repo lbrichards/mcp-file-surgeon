@@ -1,35 +1,36 @@
 import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 
 export const PATCH_FILE_POSITIONS_TOOL: Tool = {
     name: "patch_file_positions",
-    description: "Modify specific character positions in a file",
+    description: TOOL_DESCRIPTIONS.PATCH_FILE_POSITIONS.TOOL,
     inputSchema: {
         type: "object",
         properties: {
             file_path: {
                 type: "string",
-                description: "Path to the file"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_POSITIONS.PARAMS.FILE_PATH
             },
             start_pos: {
                 type: "number",
-                description: "Starting character position"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_POSITIONS.PARAMS.START_POS
             },
             end_pos: {
                 type: "number",
-                description: "Ending character position (inclusive)"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_POSITIONS.PARAMS.END_POS
             },
             replacement: {
                 type: "string",
-                description: "Text to replace the specified range"
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_POSITIONS.PARAMS.REPLACEMENT
             },
             preview_only: {
                 type: "boolean",
-                description: "When true, returns a preview without modifying the file",
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_POSITIONS.PARAMS.PREVIEW_ONLY,
                 default: false
             },
             context_chars: {
                 type: "number",
-                description: "Number of characters before and after the change to include in preview",
+                description: TOOL_DESCRIPTIONS.PATCH_FILE_POSITIONS.PARAMS.CONTEXT_CHARS,
                 default: 20
             }
         },

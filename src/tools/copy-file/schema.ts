@@ -1,22 +1,23 @@
 import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 
 export const COPY_FILE_TOOL: Tool = {
     name: "copy_file",
-    description: "Copy a file from source to destination",
+    description: TOOL_DESCRIPTIONS.COPY_FILE.TOOL,
     inputSchema: {
         type: "object",
         properties: {
             source_path: {
                 type: "string",
-                description: "Path to the source file"
+                description: TOOL_DESCRIPTIONS.COPY_FILE.PARAMS.SOURCE_PATH
             },
             dest_path: {
                 type: "string",
-                description: "Path where the file should be copied"
+                description: TOOL_DESCRIPTIONS.COPY_FILE.PARAMS.DEST_PATH
             },
             overwrite: {
                 type: "boolean",
-                description: "Whether to overwrite if destination exists",
+                description: TOOL_DESCRIPTIONS.COPY_FILE.PARAMS.OVERWRITE,
                 default: false
             }
         },

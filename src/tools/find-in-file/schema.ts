@@ -1,18 +1,19 @@
 import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 
 export const FIND_IN_FILE_TOOL: Tool = {
     name: "find_in_file",
-    description: "Find the byte position of a string in a file without loading the entire file",
+    description: TOOL_DESCRIPTIONS.FIND_IN_FILE.TOOL,
     inputSchema: {
         type: "object",
         properties: {
             file_path: {
                 type: "string",
-                description: "Path to the file to search"
+                description: TOOL_DESCRIPTIONS.FIND_IN_FILE.PARAMS.FILE_PATH
             },
             search_string: {
                 type: "string",
-                description: "String to find in the file"
+                description: TOOL_DESCRIPTIONS.FIND_IN_FILE.PARAMS.SEARCH_STRING
             }
         },
         required: ["file_path", "search_string"]

@@ -1,8 +1,9 @@
 import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import { TOOL_DESCRIPTIONS } from "../descriptions.js";
 
 export const PING_TOOL: Tool = {
     name: "ping",
-    description: "A simple ping tool that returns pong",
+    description: TOOL_DESCRIPTIONS.PING.TOOL,
     inputSchema: {
         type: "object",
         properties: {},
