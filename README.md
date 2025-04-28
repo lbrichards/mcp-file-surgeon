@@ -1,4 +1,5 @@
 # MCP File Surgeon
+![image](https://github.com/user-attachments/assets/225d7d1b-3cbf-49ff-bdf1-4cf7cca3bfbe)
 
 ## What is MCP File Surgeon?
 
